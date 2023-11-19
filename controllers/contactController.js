@@ -5,7 +5,7 @@
  //Route GET /api/contacts 
  //access public
  const getContacts = asyncHandler(async(req,res)=>{
-     const contacts = await Contact.find();
+     const contacts = await Contact.find({user_id:req.user.id});
      console.log("contacts -->",contacts);
     res.status(200).json(contacts);
 });
@@ -24,7 +24,8 @@
     const contact = await Contact.create({
         name,
         email,
-        phone
+        phone,
+        user_id:req.user.id,
  })
     res.status(201).json(contact);
 });
@@ -53,6 +54,10 @@
         res.status(404);
         throw new Error("conatct not found");
 
+    }
+    if(contact.user_id.toString()!= req.user.id)
+    {
+        res.status(403).json({message:"User doesnot have permission to update other user"});
     }
     const updatedContact = await Contact.findByIdAndUpdate
     (

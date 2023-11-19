@@ -1,6 +1,9 @@
 import { constants } from "../constatnts.js";
 const errorHandler = (err,req,res,next)=>{
 const statusCode = res.statusCode ? res.statusCode : 500;
+if (res.headersSent) {
+    return next(err);
+  }
 switch (statusCode) {
     case constants.VALIDATION_ERROR:
         res.json({title:"Validation Error",message:err.message,stackTrace:err.stackTrace});
